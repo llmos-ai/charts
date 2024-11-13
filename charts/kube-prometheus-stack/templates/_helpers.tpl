@@ -154,9 +154,19 @@ Use the grafana namespace override for multi-namespace deployments in combined c
 {{- define "kube-prometheus-stack-grafana.namespace" -}}
   {{- if .Values.grafana.namespaceOverride -}}
     {{- .Values.grafana.namespaceOverride -}}
+  {{- else if .Values.grafana.defaultDashboards.namespace -}}
+    {{- .Values.grafana.defaultDashboards.namespace -}}
   {{- else -}}
     {{- .Release.Namespace -}}
   {{- end -}}
+{{- end -}}
+
+
+{{/*
+Get the grafana release name
+*/}}
+{{- define "kube-prometheus-stack-grafana.name" -}}
+{{- printf "%s-%s" .Release.Name "grafana" | trunc 50 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
@@ -318,3 +328,41 @@ global:
 {{ $fullname }}-webhook.{{ $namespace }}.svc
 {{- end }}
 {{- end }}
+
+{{- define "system_default_registry" -}}
+{{- if .Values.global.llmos.systemDefaultRegistry -}}
+{{- printf "%s/" .Values.global.llmos.systemDefaultRegistry -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+https://github.com/helm/helm/issues/4535#issuecomment-477778391
+Usage: {{ include "call-nested" (list . "SUBCHART_NAME" "TEMPLATE") }}
+e.g. {{ include "call-nested" (list . "grafana" "grafana.fullname") }}
+*/}}
+{{- define "call-nested" }}
+{{- $dot := index . 0 }}
+{{- $subchart := index . 1 | splitList "." }}
+{{- $template := index . 2 }}
+{{- $values := $dot.Values }}
+{{- range $subchart }}
+{{- $values = index $values . }}
+{{- end }}
+{{- include $template (dict "Chart" (dict "Name" (last $subchart)) "Values" $values "Release" $dot.Release "Capabilities" $dot.Capabilities) }}
+{{- end }}
+
+{{- define "linux-node-tolerations" -}}
+- key: "cattle.io/os"
+  value: "linux"
+  effect: "NoSchedule"
+  operator: "Equal"
+{{- end -}}
+
+{{- define "linux-node-selector" -}}
+{{- if semverCompare "<1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+beta.kubernetes.io/os: linux
+{{- else -}}
+kubernetes.io/os: linux
+{{- end -}}
+{{- end -}}
+
