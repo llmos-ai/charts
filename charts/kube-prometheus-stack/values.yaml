@@ -4,11 +4,11 @@
 
 ## Provide a name in place of kube-prometheus-stack for `app:` labels
 ##
-nameOverride: ""
+nameOverride: "llmos-monitoring"
 
 ## Override the deployment namespace
 ##
-namespaceOverride: ""
+namespaceOverride: "llmos-monitoring-system"
 
 ## Provide a k8s version to auto dashboard import script example: kubeTargetVersionOverride: 1.26.6
 ##
@@ -205,6 +205,10 @@ additionalPrometheusRulesMap: {}
 
 ##
 global:
+  llmos:
+    systemDefaultRegistry: ""
+    clusterId: "local"
+    dashboardsNamespace: &dashboardsNamespace "llmos-dashboards"
   rbac:
     create: true
 
@@ -221,6 +225,17 @@ global:
       # seccomp.security.alpha.kubernetes.io/allowedProfileNames: '*'
       # seccomp.security.alpha.kubernetes.io/defaultProfileName: 'docker/default'
       # apparmor.security.beta.kubernetes.io/defaultProfileName: 'runtime/default'
+
+    userRoles:
+      ## Create default user ClusterRoles to allow users to interact with Prometheus CRs, ConfigMaps, and Secrets
+      create: true
+      ## Aggregate default user ClusterRoles into default k8s ClusterRoles
+      aggregateToDefaultRoles: true
+
+  kubectl:
+    repository: rancher/kubectl
+    tag: v1.20.2
+    pullPolicy: IfNotPresent
 
   ## Global image registry to use if it needs to be overriden for some specific use cases (e.g local registries, custom images, ...)
   ##
@@ -995,6 +1010,44 @@ grafana:
   enabled: true
   namespaceOverride: ""
 
+  image:
+    # -- The Docker registry
+    registry: docker.io
+    # -- Docker image repository
+    repository: grafana/grafana
+    # Overrides the Grafana image tag whose default is the chart appVersion
+    tag: "10.4.9"
+
+  grafana.ini:
+    analytics:
+      check_for_updates: true
+    auth:
+      disable_login_form: false
+    auth.anonymous:
+      enabled: true
+      org_role: Viewer
+    auth.basic:
+      enabled: false
+    dashboards:
+      default_home_dashboard_path: /tmp/dashboards/llmos-default-home.json
+    grafana_net:
+      url: https://grafana.net
+    log:
+      mode: console
+    paths:
+      data: /var/lib/grafana/
+      logs: /var/log/grafana
+      plugins: /var/lib/grafana/plugins
+      provisioning: /etc/grafana/provisioning
+    security:
+      allow_embedding: true
+    server:
+      domain: >-
+        {{ if (and .Values.ingress.enabled .Values.ingress.hosts) }}{{
+        .Values.ingress.hosts | first }}{{ else }}''{{ end }}
+    users:
+      auto_assign_org_role: Viewer
+
   ## ForceDeployDatasources Create datasource configmap even if grafana deployment has been disabled
   ##
   forceDeployDatasources: false
@@ -1006,6 +1059,17 @@ grafana:
   ## Deploy default dashboards
   ##
   defaultDashboardsEnabled: true
+
+  defaultDashboards:
+    # The default namespace to place defaultDashboards within
+    namespace: *dashboardsNamespace
+    # Whether to create the default namespace as a Helm managed namespace or use an existing namespace
+    # If false, the defaultDashboards.namespace will be created as a Helm managed namespace
+    useExistingNamespace: false
+    # Whether the Helm managed namespace created by this chart should be left behind on a Helm uninstall
+    # If you place other dashboards in this namespace, then they will be deleted on a helm uninstall
+    # Ignore if useExistingNamespace is true
+    cleanupOnUninstall: false
 
   ## Timezone for the default dashboards
   ## Other options are: browser or a specific timezone, i.e. Europe/Luxembourg
@@ -1063,15 +1127,51 @@ grafana:
 
   # # To make Grafana persistent (Using Statefulset)
   # #
-  # persistence:
-  #   enabled: true
-  #   type: sts
-  #   storageClassName: "storageClassName"
-  #   accessModes:
-  #     - ReadWriteOnce
-  #   size: 20Gi
-  #   finalizers:
-  #     - kubernetes.io/pvc-protection
+  #  persistence:
+  #    enabled: true
+  #    type: sts
+  #    storageClassName: ""
+  #    accessModes:
+  #      - ReadWriteOnce
+  #    size: 20Gi
+  #    finalizers:
+  #      - kubernetes.io/pvc-protection
+
+  extraContainers: |
+    - name: grafana-proxy
+      args:
+      - nginx
+      - -g
+      - daemon off;
+      - -c
+      - /nginx/nginx.conf
+      image: "{{ .Values.proxy.image.repository }}:{{ .Values.proxy.image.tag }}"
+      ports:
+      - containerPort: 8080
+        name: nginx-http
+        protocol: TCP
+      volumeMounts:
+      - mountPath: /nginx
+        name: grafana-nginx
+      - mountPath: /var/cache/nginx
+        name: nginx-home
+      securityContext:
+        runAsUser: 101
+        runAsGroup: 101
+  extraContainerVolumes:
+    - name: nginx-home
+      emptyDir: {}
+    - name: grafana-nginx
+      configMap:
+        name: grafana-nginx-proxy-config
+        items:
+          - key: nginx.conf
+            mode: 438
+            path: nginx.conf
+  proxy:
+    image:
+      repository: library/nginx
+      tag: 1.24.0-alpine
 
   serviceAccount:
     create: true
@@ -1082,8 +1182,7 @@ grafana:
       enabled: true
       label: grafana_dashboard
       labelValue: "1"
-      # Allow discovery in all namespaces for dashboards
-      searchNamespace: ALL
+      searchNamespace: *dashboardsNamespace
 
       # Support for new table panels, when enabled grafana auto migrates the old table panels to newer table panels
       enableNewTablePanelSyntax: false
@@ -1102,6 +1201,8 @@ grafana:
       enabled: true
       defaultDatasourceEnabled: true
       isDefaultDatasource: true
+
+      searchNamespace: *dashboardsNamespace
 
       name: Prometheus
       uid: prometheus
@@ -1178,9 +1279,19 @@ grafana:
   ## Passed to grafana subchart and used by servicemonitor below
   ##
   service:
-    portName: http-web
-    ipFamilies: []
-    ipFamilyPolicy: ""
+    portName: nginx-http
+    port: 80
+    targetPort: 8080
+    ## Port to expose on each node
+    ## Only used if service.type is 'NodePort'
+    ##
+    nodePort: 30950
+    ## Service type
+    ##
+    type: ClusterIP
+
+  deploymentStrategy:
+    type: Recreate
 
   serviceMonitor:
     # If true, a ServiceMonitor CRD is created for a prometheus operator
@@ -1214,6 +1325,17 @@ grafana:
     #   targetLabel: nodename
     #   replacement: $1
     #   action: replace
+
+  resources:
+    limits:
+      memory: 200Mi
+      cpu: 200m
+    requests:
+      memory: 100Mi
+      cpu: 100m
+
+  testFramework:
+    enabled: false
 
 ## Flag to disable all the kubernetes component scrapers
 ##
