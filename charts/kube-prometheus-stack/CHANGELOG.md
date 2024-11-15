@@ -2,7 +2,7 @@
 
 This changelog highlights notable changes to this chart compared to the upstream [`kube-prometheus-stack`](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack) chart.
 
-- **Upstream `kube-prometheus-stack` version**: 65.4.0
+- **Upstream `kube-prometheus-stack` version**: 66.1.1
 
 ## Changes - v0.1.0 (2024-11-13)
 
@@ -14,7 +14,7 @@ This changelog highlights notable changes to this chart compared to the upstream
 - **Added default resource limits**: Added default resource limits for `Prometheus Operator`, `Prometheus`, `AlertManager`, `Grafana`, `kube-state-metrics`, and `node-exporter`.
 
 ### Grafana
-- **Added nGINX proxy container for Grafana**: Added a default `nginx` proxy container deployed with Grafana, whose configuration is set in the `ConfigMap` located in `./templates/grafana/nginx-config.yaml`. This container enables viewing Grafana's UI through a proxy that has a subpath (e.g., K8s API proxy). The proxy container listens on port `8080` (with the `portName` set to `nginx-http` instead of the default `service`). This will forward requests to the Grafana container, which listens on the default port `3000`.
+- **Added nginx proxy container for Grafana**: Added a default `nginx` proxy container deployed with Grafana, whose configuration is set in the `ConfigMap` located in `./templates/grafana/nginx-config.yaml`. This container enables viewing Grafana's UI through a proxy that has a subpath (e.g., K8s API proxy). The proxy container listens on port `8080` (with the `portName` set to `nginx-http` instead of the default `service`). This will forward requests to the Grafana container, which listens on the default port `3000`.
 - **Added namespace for Grafana dashboards**: Added `grafana.sidecar.dashboards.searchNamespace` and `grafana.sidecar.datasources.searchNamespace` to `values.yaml` (default value: `llmos-dashboards`). The specified namespace should contain all ConfigMaps labeled `grafana_dashboard`, which the Grafana Dashboards sidecar will search for updates. This namespace is also created along with the deployment. All default dashboard ConfigMaps have been moved from the deployment namespace to this new namespace.
 - **Added default LLMOS dashboard**: Added a default LLMOS dashboard on the Grafana home page.
 - **Modified Grafana service values**: Modified the default values for `grafana.service` and exposed them in the default `README.md`.

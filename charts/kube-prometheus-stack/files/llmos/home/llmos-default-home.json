@@ -38,7 +38,7 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "## Welcome LLMOS Monitoring\n\nLLMOS Monitoring is a Helm chart developed by [1BLOCK.AI](https://1block.ai/) that is powered by [Prometheus Operator](https://github.com/prometheus-operator/prometheus-operator). It is based on the upstream [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack) Helm chart maintained by the Prometheus community.\n\nVisiting LLMOS [monitoring docs](https://llmos.1block.ai/docs/monitoring) for more details.",
+        "content": "## Welcome to LLMOS Monitoring\n\nLLMOS Monitoring is a Helm chart developed by [1BLOCK.AI](https://1block.ai/) that is powered by [Prometheus Operator](https://github.com/prometheus-operator/prometheus-operator). It is based on the upstream [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack) Helm chart maintained by the Prometheus community.\n\nVisiting LLMOS [monitoring docs](https://llmos.1block.ai/docs/monitoring) for more details.",
         "mode": "markdown"
       },
       "pluginVersion": "10.4.9",

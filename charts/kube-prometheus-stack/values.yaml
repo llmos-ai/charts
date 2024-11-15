@@ -209,6 +209,7 @@ global:
     systemDefaultRegistry: ""
     clusterId: "local"
     dashboardsNamespace: &dashboardsNamespace "llmos-dashboards"
+    systemNamespace: "llmos-system"
   rbac:
     create: true
 
@@ -5099,3 +5100,6 @@ extraManifests: []
   #     name: prometheus-extra
   #   data:
   #     extra-data: "value"
+
+dcgmExporter:
+  enabled: true
