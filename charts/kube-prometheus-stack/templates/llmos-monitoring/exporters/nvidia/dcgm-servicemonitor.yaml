@@ -1,0 +1,31 @@
+{{- if .Values.dcgmExporter.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels: {{ include "kube-prometheus-stack.labels" . | nindent 4 }}
+  name: dcgm-exporter
+  namespace: {{ .Values.global.llmos.systemNamespace }}
+spec:
+  endpoints:
+  - interval: 15s
+    path: /metrics
+    port: gpu-metrics
+    relabelings:
+    - sourceLabels: [__meta_kubernetes_pod_node_name]
+      targetLabel: node_name
+      regex: (.*)
+      replacement: $1
+      action: replace
+    - sourceLabels: [__meta_kubernetes_pod_host_ip]
+      targetLabel: instance
+      regex: (.*)
+      replacement: $1
+      action: replace
+  jobLabel: app
+  namespaceSelector:
+    matchNames:
+      - {{ .Values.global.llmos.systemNamespace }}
+  selector:
+    matchLabels:
+      app: nvidia-dcgm-exporter
+{{- end }}

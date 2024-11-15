@@ -3,7 +3,10 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
@@ -13,10 +16,8 @@
     ]
   },
   "editable": true,
-  "gnetId": null,
+  "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 28,
-  "iteration": 1618265214337,
   "links": [],
   "panels": [
     {
@@ -26,10 +27,62 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "$datasource",
+      "datasource": {
+        "uid": "$datasource"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "cpu"
         },
         "overrides": []
       },
@@ -55,6 +108,18 @@
       "lines": true,
       "linewidth": 1,
       "nullPointMode": "null",
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
       "percentage": false,
       "pluginVersion": "7.1.5",
       "pointradius": 2,
@@ -66,24 +131,36 @@
       "steppedLine": false,
       "targets": [
         {
+          "datasource": {
+            "uid": "$datasource"
+          },
           "expr": "sum((sum(rate(container_cpu_cfs_throttled_seconds_total{namespace=~\"$namespace\"}[$__rate_interval])) by (pod)) * on(pod) kube_pod_info{namespace=~\"$namespace\", created_by_kind=\"$kind\", created_by_name=\"$workload\"})",
           "interval": "",
           "legendFormat": "CFS throttled",
           "refId": "A"
         },
         {
+          "datasource": {
+            "uid": "$datasource"
+          },
           "expr": "sum((sum(rate(container_cpu_system_seconds_total{namespace=~\"$namespace\"}[$__rate_interval])) by (pod) OR sum(rate(windows_container_cpu_usage_seconds_kernelmode{namespace=~\"$namespace\"}[$__rate_interval])) by (pod)) * on(pod) kube_pod_info{namespace=~\"$namespace\", created_by_kind=\"$kind\", created_by_name=\"$workload\"})",
           "interval": "",
           "legendFormat": "System",
           "refId": "B"
         },
         {
+          "datasource": {
+            "uid": "$datasource"
+          },
           "expr": "sum((sum(rate(container_cpu_usage_seconds_total{namespace=~\"$namespace\"}[$__rate_interval])) by (pod) OR sum(rate(windows_container_cpu_usage_seconds_total{namespace=~\"$namespace\"}[$__rate_interval])) by (pod)) * on(pod) kube_pod_info{namespace=~\"$namespace\", created_by_kind=\"$kind\", created_by_name=\"$workload\"})",
           "interval": "",
           "legendFormat": "Total",
           "refId": "C"
         },
         {
+          "datasource": {
+            "uid": "$datasource"
+          },
           "expr": "sum((sum(rate(container_cpu_user_seconds_total{namespace=~\"$namespace\"}[$__rate_interval])) by (pod) OR sum(rate(windows_container_cpu_usage_seconds_usermode{namespace=~\"$namespace\"}[$__rate_interval])) by (pod)) * on(pod) kube_pod_info{namespace=~\"$namespace\", created_by_kind=\"$kind\", created_by_name=\"$workload\"})",
           "interval": "",
           "legendFormat": "User",
@@ -91,9 +168,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "CPU Utilization",
       "tooltip": {
         "shared": true,
@@ -102,34 +177,24 @@
       },
       "type": "timeseries",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "decimals": null,
           "format": "cpu",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -139,10 +204,62 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "$datasource",
+      "datasource": {
+        "uid": "$datasource"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
         },
         "overrides": []
       },
@@ -168,6 +285,18 @@
       "lines": true,
       "linewidth": 1,
       "nullPointMode": "null",
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
       "percentage": false,
       "pluginVersion": "7.1.5",
       "pointradius": 2,
@@ -179,6 +308,9 @@
       "steppedLine": false,
       "targets": [
         {
+          "datasource": {
+            "uid": "$datasource"
+          },
           "expr": "sum((sum(container_memory_working_set_bytes{namespace=~\"$namespace\"} OR windows_container_memory_usage_commit_bytes{namespace=~\"$namespace\"}) by (pod)) * on(pod) kube_pod_info{namespace=~\"$namespace\", created_by_kind=\"$kind\", created_by_name=\"$workload\"})",
           "interval": "",
           "legendFormat": "Total",
@@ -186,9 +318,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Memory Utilization",
       "tooltip": {
         "shared": true,
@@ -197,9 +327,7 @@
       },
       "type": "timeseries",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -207,24 +335,17 @@
         {
           "decimals": 1,
           "format": "bytes",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -234,10 +355,61 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "$datasource",
+      "datasource": {
+        "uid": "$datasource"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "pps"
         },
         "overrides": []
       },
@@ -263,6 +435,18 @@
       "lines": true,
       "linewidth": 1,
       "nullPointMode": "null",
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
       "percentage": false,
       "pluginVersion": "7.1.5",
       "pointradius": 2,
@@ -274,36 +458,54 @@
       "steppedLine": false,
       "targets": [
         {
+          "datasource": {
+            "uid": "$datasource"
+          },
           "expr": "sum((sum(irate(container_network_receive_packets_total{namespace=~\"$namespace\"}[$__rate_interval])) by (pod) OR sum(irate(windows_container_network_receive_packets_total{namespace=~\"$namespace\"}[$__rate_interval])) by (pod)) * on(pod) kube_pod_info{namespace=~\"$namespace\", created_by_kind=\"$kind\", created_by_name=\"$workload\"})",
           "interval": "",
           "legendFormat": "Receive Total",
           "refId": "A"
         },
         {
+          "datasource": {
+            "uid": "$datasource"
+          },
           "expr": "sum((sum(irate(container_network_transmit_packets_total{namespace=~\"$namespace\"}[$__rate_interval])) by (pod) OR sum(irate(windows_container_network_transmit_packets_total{namespace=~\"$namespace\"}[$__rate_interval])) by (pod)) * on(pod) kube_pod_info{namespace=~\"$namespace\", created_by_kind=\"$kind\", created_by_name=\"$workload\"})",
           "interval": "",
           "legendFormat": "Transmit Total",
           "refId": "B"
         },
         {
+          "datasource": {
+            "uid": "$datasource"
+          },
           "expr": "sum((sum(irate(container_network_receive_packets_dropped_total{namespace=~\"$namespace\"}[$__rate_interval])) by (pod) OR sum(irate(windows_container_network_receive_packets_dropped_total{namespace=~\"$namespace\"}[$__rate_interval])) by (pod)) * on(pod) kube_pod_info{namespace=~\"$namespace\", created_by_kind=\"$kind\", created_by_name=\"$workload\"})",
           "interval": "",
           "legendFormat": "Receive Dropped",
           "refId": "C"
         },
         {
+          "datasource": {
+            "uid": "$datasource"
+          },
           "expr": "sum((sum(irate(container_network_receive_errors_total{namespace=~\"$namespace\"}[$__rate_interval])) by (pod)) * on(pod) kube_pod_info{namespace=~\"$namespace\", created_by_kind=\"$kind\", created_by_name=\"$workload\"})",
           "interval": "",
           "legendFormat": "Receive Errors",
           "refId": "D"
         },
         {
+          "datasource": {
+            "uid": "$datasource"
+          },
           "expr": "sum((sum(irate(container_network_transmit_errors_total{namespace=~\"$namespace\"}[$__rate_interval])) by (pod)) * on(pod) kube_pod_info{namespace=~\"$namespace\", created_by_kind=\"$kind\", created_by_name=\"$workload\"})",
           "interval": "",
           "legendFormat": "Transmit Errors",
           "refId": "E"
         },
         {
+          "datasource": {
+            "uid": "$datasource"
+          },
           "expr": "sum((sum(irate(container_network_transmit_packets_dropped_total{namespace=~\"$namespace\"}[$__rate_interval])) by (pod) OR sum(irate(windows_container_network_transmit_packets_dropped_total{namespace=~\"$namespace\"}[$__rate_interval])) by (pod)) * on(pod) kube_pod_info{namespace=~\"$namespace\", created_by_kind=\"$kind\", created_by_name=\"$workload\"})",
           "interval": "",
           "legendFormat": "Transmit Dropped",
@@ -311,9 +513,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Network Traffic",
       "tooltip": {
         "shared": true,
@@ -322,9 +522,7 @@
       },
       "type": "timeseries",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -332,24 +530,17 @@
         {
           "decimals": 1,
           "format": "pps",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -359,10 +550,61 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "$datasource",
+      "datasource": {
+        "uid": "$datasource"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "Bps"
         },
         "overrides": []
       },
@@ -388,6 +630,18 @@
       "lines": true,
       "linewidth": 1,
       "nullPointMode": "null",
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
       "percentage": false,
       "pluginVersion": "7.1.5",
       "pointradius": 2,
@@ -399,12 +653,18 @@
       "steppedLine": false,
       "targets": [
         {
+          "datasource": {
+            "uid": "$datasource"
+          },
           "expr": "sum((sum(irate(container_network_receive_bytes_total{namespace=~\"$namespace\"}[$__rate_interval])) by (pod) OR sum(irate(windows_container_network_receive_bytes_total{namespace=~\"$namespace\"}[$__rate_interval])) by (pod)) * on(pod) kube_pod_info{namespace=~\"$namespace\", created_by_kind=\"$kind\", created_by_name=\"$workload\"})",
           "interval": "",
           "legendFormat": "Receive Total",
           "refId": "A"
         },
         {
+          "datasource": {
+            "uid": "$datasource"
+          },
           "expr": "sum((sum(irate(container_network_transmit_bytes_total{namespace=~\"$namespace\"}[$__rate_interval])) by (pod) OR sum(irate(windows_container_network_transmit_bytes_total{namespace=~\"$namespace\"}[$__rate_interval])) by (pod)) * on(pod) kube_pod_info{namespace=~\"$namespace\", created_by_kind=\"$kind\", created_by_name=\"$workload\"})",
           "interval": "",
           "legendFormat": "Transmit Total",
@@ -412,9 +672,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Network I/O",
       "tooltip": {
         "shared": true,
@@ -423,9 +681,7 @@
       },
       "type": "timeseries",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -433,24 +689,17 @@
         {
           "decimals": 1,
           "format": "Bps",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -460,10 +709,61 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "$datasource",
+      "datasource": {
+        "uid": "$datasource"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "Bps"
         },
         "overrides": []
       },
@@ -489,6 +789,18 @@
       "lines": true,
       "linewidth": 1,
       "nullPointMode": "null",
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
       "percentage": false,
       "pluginVersion": "7.1.5",
       "pointradius": 2,
@@ -500,12 +812,18 @@
       "steppedLine": false,
       "targets": [
         {
+          "datasource": {
+            "uid": "$datasource"
+          },
           "expr": "sum((sum(rate(container_fs_writes_bytes_total{namespace=~\"$namespace\"}[$__rate_interval])) by (pod)) * on(pod) kube_pod_info{namespace=~\"$namespace\", created_by_kind=\"$kind\", created_by_name=\"$workload\"})",
           "interval": "",
           "legendFormat": "Write",
           "refId": "A"
         },
         {
+          "datasource": {
+            "uid": "$datasource"
+          },
           "expr": "sum((sum(rate(container_fs_reads_bytes_total{namespace=~\"$namespace\"}[$__rate_interval])) by (pod)) * on(pod) kube_pod_info{namespace=~\"$namespace\", created_by_kind=\"$kind\", created_by_name=\"$workload\"})",
           "interval": "",
           "legendFormat": "Read",
@@ -513,9 +831,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Disk I/O",
       "tooltip": {
         "shared": true,
@@ -524,9 +840,7 @@
       },
       "type": "timeseries",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -534,29 +848,22 @@
         {
           "decimals": 1,
           "format": "Bps",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     }
   ],
   "refresh": false,
-  "schemaVersion": 26,
+  "schemaVersion": 39,
   "tags": [
     "llmos-monitoring"
   ],
@@ -564,30 +871,32 @@
     "list": [
       {
         "current": {
+          "selected": false,
           "text": "Prometheus",
-          "value": "Prometheus"
+          "value": "prometheus"
         },
         "hide": 0,
+        "includeAll": false,
         "label": "Data Source",
+        "multi": false,
         "name": "datasource",
-        "options": [
-
-        ],
+        "options": [],
         "query": "prometheus",
         "refresh": 1,
         "regex": "",
+        "skipUrlSync": false,
         "type": "datasource"
       },
       {
-        "allValue": null,
         "hide": 0,
         "includeAll": false,
-        "label": null,
         "multi": false,
         "name": "namespace",
+        "options": [],
         "query": "query_result(kube_pod_info{namespace!=\"\"} * on(pod) group_right(namespace, created_by_kind, created_by_name) count({__name__=~\"container_.*|windows_container_.*\", pod!=\"\"}) by (pod))",
         "refresh": 2,
         "regex": "/.*namespace=\"([^\"]*)\"/",
+        "skipUrlSync": false,
         "sort": 0,
         "tagValuesQuery": "",
         "tagsQuery": "",
@@ -595,15 +904,16 @@
         "useTags": false
       },
       {
-        "allValue": null,
+        "definition": "",
         "hide": 0,
         "includeAll": false,
-        "label": null,
         "multi": false,
         "name": "kind",
+        "options": [],
         "query": "query_result(kube_pod_info{namespace=\"$namespace\", created_by_kind!=\"\"} * on(pod) group_right(namespace, created_by_kind, created_by_name) count({__name__=~\"container_.*|windows_container_.*\", pod!=\"\"}) by (pod))",
         "refresh": 2,
         "regex": "/.*created_by_kind=\"([^\"]*)\"/",
+        "skipUrlSync": false,
         "sort": 0,
         "tagValuesQuery": "",
         "tagsQuery": "",
@@ -611,15 +921,15 @@
         "useTags": false
       },
       {
-        "allValue": null,
         "hide": 0,
         "includeAll": false,
-        "label": null,
         "multi": false,
         "name": "workload",
+        "options": [],
         "query": "query_result(kube_pod_info{namespace=\"$namespace\", created_by_kind=\"$kind\", created_by_name!=\"\"} * on(pod) group_right(namespace, created_by_kind, created_by_name) count({__name__=~\"container_.*|windows_container_.*\", pod!=\"\"}) by (pod))",
         "refresh": 2,
         "regex": "/.*created_by_name=\"([^\"]*)\"/",
+        "skipUrlSync": false,
         "sort": 0,
         "tagValuesQuery": "",
         "tagsQuery": "",
@@ -649,5 +959,6 @@
   "timezone": "",
   "title": "LLMOS / Workload",
   "uid": "llmos-workload-1",
-  "version": 1
+  "version": 1,
+  "weekStart": ""
 }
