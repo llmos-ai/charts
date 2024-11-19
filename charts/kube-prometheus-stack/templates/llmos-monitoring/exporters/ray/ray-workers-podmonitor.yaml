@@ -1,0 +1,20 @@
+{{- if .Values.rayExporter.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  labels: {{ include "kube-prometheus-stack.labels" . | nindent 4 }}
+  name: ray-workers-monitor
+  namespace: {{ include "kube-prometheus-stack.namespace" . }}
+spec:
+  namespaceSelector:
+    any: true
+  jobLabel: ray-workers
+  selector:
+    matchLabels:
+      ray.io/node-type: worker
+  podMetricsEndpoints:
+  - port: metrics
+    relabelings:
+    - sourceLabels: [__meta_kubernetes_pod_label_ray_io_cluster]
+      targetLabel: ray_io_cluster
+{{- end }}

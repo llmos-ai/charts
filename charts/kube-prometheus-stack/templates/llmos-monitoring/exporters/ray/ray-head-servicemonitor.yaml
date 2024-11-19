@@ -1,0 +1,18 @@
+{{- if .Values.rayExporter.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels: {{ include "kube-prometheus-stack.labels" . | nindent 4 }}
+  name: ray-head-monitor
+  namespace: {{ include "kube-prometheus-stack.namespace" . }}
+spec:
+  endpoints:
+  - interval: 5s
+    port: metrics
+  jobLabel: ray-head
+  namespaceSelector:
+    any: true
+  selector:
+    matchLabels:
+      ray.io/node-type: head
+{{- end }}
