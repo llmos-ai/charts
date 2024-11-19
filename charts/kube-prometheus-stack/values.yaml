@@ -5103,3 +5103,7 @@ extraManifests: []
 
 dcgmExporter:
   enabled: true
+modelServiceExporter:
+  enabled: true
+rayExporter:
+  enabled: true
