@@ -1,0 +1,17 @@
+{{- if and .Values.grafana.enabled (not .Values.kubeScheduler.enabled) .Values.grafana.defaultDashboardsEnabled (eq .Values.global.k8s.provider "k3s") }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: {{ .Values.grafana.defaultDashboards.namespace }}
+  name: k8s-kube-scheduler-dashboard
+  annotations:
+{{ toYaml .Values.grafana.sidecar.dashboards.annotations | indent 4 }}
+  labels:
+    {{- if $.Values.grafana.sidecar.dashboards.label }}
+    {{ $.Values.grafana.sidecar.dashboards.label }}: "1"
+    {{- end }}
+    app: {{ template "kube-prometheus-stack.name" $ }}-grafana
+{{ include "kube-prometheus-stack.labels" $ | indent 4 }}
+data:
+{{ or (.Files.Glob "files/llmos/k8s/k8s-scheduler*").AsConfig "{}" | indent 2 }}
+{{- end }}
