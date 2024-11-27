@@ -24,9 +24,7 @@
       "asDropdown": true,
       "includeVars": true,
       "keepTime": true,
-      "tags": [
-        "kubernetes-mixin"
-      ],
+      "tags": ["kubernetes-mixin"],
       "targetBlank": false,
       "title": "Kubernetes",
       "type": "dashboards"
@@ -72,9 +70,7 @@
         "justifyMode": "auto",
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -169,9 +165,7 @@
       "options": {
         "legend": {
           "asTable": true,
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -267,9 +261,7 @@
       "options": {
         "legend": {
           "asTable": true,
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -365,9 +357,7 @@
       "options": {
         "legend": {
           "asTable": true,
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -463,9 +453,7 @@
       "options": {
         "legend": {
           "asTable": true,
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -561,9 +549,7 @@
       "options": {
         "legend": {
           "asTable": true,
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -686,9 +672,7 @@
       "options": {
         "legend": {
           "asTable": true,
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -784,9 +768,7 @@
       "options": {
         "legend": {
           "asTable": true,
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -838,9 +820,7 @@
       "options": {
         "legend": {
           "asTable": true,
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -891,9 +871,7 @@
       "options": {
         "legend": {
           "asTable": true,
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -944,9 +922,7 @@
       "options": {
         "legend": {
           "asTable": true,
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -973,9 +949,7 @@
   ],
   "refresh": "10s",
   "schemaVersion": 39,
-  "tags": [
-    "kubernetes-mixin"
-  ],
+  "tags": ["kubernetes-mixin"],
   "templating": {
     "list": [
       {

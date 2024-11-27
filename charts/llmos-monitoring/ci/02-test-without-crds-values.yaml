@@ -9,5 +9,9 @@ prometheus-node-exporter:
     targetPort: 9101
     port: 9101
 
+grafana:
+  defaultDashboards:
+    useExistingNamespace: true
+
 crds:
   enabled: false

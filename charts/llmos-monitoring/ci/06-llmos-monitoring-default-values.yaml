@@ -1,0 +1,39 @@
+nameOverride: "llmos-monitoring"
+namespaceOverride: "llmos-monitoring-system"
+crds:
+  enabled: true
+global:
+  k8s:
+    provider: "k3s"
+  llmos:
+    systemDefaultRegistry: ""
+    clusterId: "local"
+    dashboardsNamespace: &dashboardsNamespace "llmos-dashboards"
+    systemNamespace: "llmos-system"
+
+alertmanager:
+  enabled: true
+grafana:
+  enabled: true
+  defaultDashboards:
+    useExistingNamespace: true
+# Default configuration of prometheus operator will create CRDs in the cluster idempotently
+prometheusOperator:
+  enabled: true
+  serviceMonitor:
+    selfMonitor: false
+  tls:
+    enabled: false
+  admissionWebhooks:
+    enabled: false
+  namespaces:
+    releaseNamespace: true
+    additional:
+      - kube-system
+
+dcgmExporter:
+  enabled: true
+modelServiceExporter:
+  enabled: true
+rayExporter:
+  enabled: true

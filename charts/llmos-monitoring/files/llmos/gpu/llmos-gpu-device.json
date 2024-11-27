@@ -67,9 +67,7 @@
         "minVizWidth": 75,
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
+          "calcs": ["mean"],
           "fields": "",
           "values": false
         },
@@ -141,9 +139,7 @@
         "minVizWidth": 75,
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -1075,9 +1071,7 @@
   ],
   "refresh": "5s",
   "schemaVersion": 39,
-  "tags": [
-    "llmos-monitoring"
-  ],
+  "tags": ["llmos-monitoring"],
   "templating": {
     "list": [
       {

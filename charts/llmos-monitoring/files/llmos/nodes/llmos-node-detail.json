@@ -1169,9 +1169,7 @@
   ],
   "refresh": "30s",
   "schemaVersion": 39,
-  "tags": [
-    "llmos-monitoring"
-  ],
+  "tags": ["llmos-monitoring"],
   "templating": {
     "list": [
       {
