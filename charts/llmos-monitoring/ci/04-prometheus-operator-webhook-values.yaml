@@ -6,3 +6,7 @@ prometheusOperator:
         test2: test3
     deployment:
       enabled: true
+
+grafana:
+  defaultDashboards:
+    useExistingNamespace: true

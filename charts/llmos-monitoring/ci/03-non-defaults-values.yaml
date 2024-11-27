@@ -85,6 +85,8 @@ grafana:
     datasources:
       alertmanager:
         name: 0
+  defaultDashboards:
+    useExistingNamespace: true
 
 nodeExporter:
   enabled: true

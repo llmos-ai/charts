@@ -1434,10 +1434,7 @@
   ],
   "refresh": "10s",
   "schemaVersion": 39,
-  "tags": [
-    "dns",
-    "coredns"
-  ],
+  "tags": ["dns", "coredns"],
   "templating": {
     "list": [
       {

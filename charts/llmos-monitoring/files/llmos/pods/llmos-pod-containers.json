@@ -870,9 +870,7 @@
   ],
   "refresh": false,
   "schemaVersion": 39,
-  "tags": [
-    "llmos-monitoring"
-  ],
+  "tags": ["llmos-monitoring"],
   "templating": {
     "list": [
       {
