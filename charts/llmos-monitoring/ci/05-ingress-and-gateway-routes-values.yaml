@@ -28,6 +28,9 @@ alertmanager:
                 type: PathPrefix
                 value: /foo/
 
+grafana:
+  defaultDashboards:
+    useExistingNamespace: true
 
 prometheus:
   ingress:
