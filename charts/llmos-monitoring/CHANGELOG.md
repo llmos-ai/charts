@@ -14,10 +14,10 @@ This changelog highlights notable changes to this chart compared to the upstream
 - **Added default resource limits**: Added default resource limits for `Prometheus Operator`, `Prometheus`, `AlertManager`, `Grafana`, `kube-state-metrics`, and `node-exporter`.
 - **Added global k8s provider config**: Added global `global.k8s.provider` config to support provider configs, default to `k3s` for now.
 - Disabled the following deployments by default (can be enabled if required):
-    - `AlertManager`
-    - `kube-controller-manager` metrics exporter (as already aggregated in apiserver if runs in k3s)
-    - `kube-scheduler` metrics exporter (as already aggregated in apiserver if runs in k3s)
-    - `kube-proxy` metrics exporter (as already aggregated in apiserver if runs in k3s)
+  - `AlertManager`
+  - `kube-controller-manager` metrics exporter (as already aggregated in apiserver if runs in k3s)
+  - `kube-scheduler` metrics exporter (as already aggregated in apiserver if runs in k3s)
+  - `kube-proxy` metrics exporter (as already aggregated in apiserver if runs in k3s)
 
 ### Grafana
 - **Added nginx proxy container for Grafana**: Added a default `nginx` proxy container deployed with Grafana, whose configuration is set in the `ConfigMap` located in `./templates/grafana/nginx-config.yaml`. This container enables viewing Grafana's UI through a proxy that has a subpath (e.g., K8s API proxy). The proxy container listens on port `8080` (with the `portName` set to `nginx-http` instead of the default `service`). This will forward requests to the Grafana container, which listens on the default port `3000`.

@@ -9,7 +9,7 @@ on:
       - main
 
 env:
-  UPSTREAM_REPO: ${{ vars.UPSTREAM_REPO || 'https://github.com/llmos-ai/charts.git' }}
+  UPSTREAM_REPO: ${{ env.UPSTREAM_REPO || 'https://github.com/llmos-ai/charts.git' }}
 
 jobs:
   lint-test:
