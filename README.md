@@ -1,6 +1,6 @@
 # LLMOS Charts
 
-[![Release Charts](https://github.com/llmos-ai/charts/actions/workflows/ci.yaml/badge.svg)](https://github.com/llmos-ai/charts/actions/workflows/ci.yaml)
+[![Release Charts](https://github.com/llmos-ai/charts/actions/workflows/release.yaml/badge.svg)](https://github.com/llmos-ai/charts/actions/workflows/release.yaml)
 
 ## Prerequisites
 
