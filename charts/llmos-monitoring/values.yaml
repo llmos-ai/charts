@@ -852,9 +852,13 @@ alertmanager:
     ## Define resources requests and limits for single Pods.
     ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
     ##
-    resources: {}
-    # requests:
-    #   memory: 400Mi
+    resources:
+      limits:
+        memory: 500Mi
+        cpu: 1000m
+      requests:
+        memory: 100Mi
+        cpu: 100m
 
     ## Pod anti-affinity can prevent the scheduler from placing Prometheus replicas on the same node.
     ## The default value "soft" means that the scheduler should *prefer* to not schedule two replica pods onto the same node but no guarantee is provided.
@@ -4057,7 +4061,13 @@ prometheus:
 
     ## Resource limits & requests
     ##
-    resources: {}
+    resources:
+      limits:
+        memory: 3000Mi
+        cpu: 1000m
+      requests:
+        memory: 750Mi
+        cpu: 750m
     # requests:
     #   memory: 400Mi
 
