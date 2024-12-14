@@ -11,6 +11,75 @@ entries:
       artifacthub.io/operator: "true"
     apiVersion: v2
     appVersion: v0.78.1
+    created: "2024-12-14T14:43:09.245470587Z"
+    dependencies:
+    - condition: crds.enabled
+      name: crds
+      repository: ""
+      version: 0.0.0
+    - condition: kubeStateMetrics.enabled
+      name: kube-state-metrics
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 5.27.*
+    - condition: nodeExporter.enabled
+      name: prometheus-node-exporter
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 4.42.*
+    - condition: grafana.enabled
+      name: grafana
+      repository: https://grafana.github.io/helm-charts
+      version: 8.5.*
+    - condition: windowsMonitoring.enabled
+      name: prometheus-windows-exporter
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 0.7.*
+    description: kube-prometheus-stack collects Kubernetes manifests, Grafana dashboards,
+      and Prometheus rules combined with documentation and scripts to provide easy
+      to operate end-to-end Kubernetes cluster monitoring with Prometheus using the
+      Prometheus Operator.
+    digest: f49e3c37b2f7ffe44d8997973cebe40ab7b7b77204b7df8e032973086c042f21
+    home: https://github.com/prometheus-operator/kube-prometheus
+    icon: https://raw.githubusercontent.com/prometheus/prometheus.github.io/master/assets/prometheus_logo-cb55bb5c346.png
+    keywords:
+    - operator
+    - prometheus
+    - kube-prometheus
+    kubeVersion: '>=1.19.0-0'
+    maintainers:
+    - email: andrew@quadcorps.co.uk
+      name: andrewgkew
+    - email: gianrubio@gmail.com
+      name: gianrubio
+    - email: github.gkarthiks@gmail.com
+      name: gkarthiks
+    - email: kube-prometheus-stack@sisti.pt
+      name: GMartinez-Sisti
+    - email: github@jkroepke.de
+      name: jkroepke
+    - email: scott@r6by.com
+      name: scottrigby
+    - email: miroslav.hadzhiev@gmail.com
+      name: Xtigyro
+    - email: quentin.bisson@gmail.com
+      name: QuentinBisson
+    name: llmos-monitoring
+    sources:
+    - https://github.com/prometheus-community/helm-charts
+    - https://github.com/prometheus-operator/kube-prometheus
+    type: application
+    urls:
+    - https://github.com/llmos-ai/charts/releases/download/llmos-monitoring-0.1.2-up66.1.1/llmos-monitoring-0.1.2-up66.1.1.tgz
+    version: 0.1.2-up66.1.1
+  - annotations:
+      artifacthub.io/license: Apache-2.0
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/prometheus-community/helm-charts
+        - name: Upstream Project
+          url: https://github.com/prometheus-operator/kube-prometheus
+      artifacthub.io/operator: "true"
+    apiVersion: v2
+    appVersion: v0.78.1
     created: "2024-12-02T03:39:30.209515262Z"
     dependencies:
     - condition: crds.enabled
@@ -139,4 +208,33 @@ entries:
     urls:
     - https://github.com/llmos-ai/charts/releases/download/llmos-monitoring-0.1.0-up66.1.1/llmos-monitoring-0.1.0-up66.1.1.tgz
     version: 0.1.0-up66.1.1
-generated: "2024-12-02T03:39:30.209528086Z"
+  snapshot-controller:
+  - apiVersion: v2
+    appVersion: v8.2.0
+    created: "2024-12-14T14:43:09.360743036Z"
+    description: A Helm chart for Kubernetes CSI Snapshotter Controller
+    digest: cb5def3a539c023118096023d8f1bd9968bd91158c22f50872633eebc615e8ea
+    home: https://github.com/kubernetes-csi/external-snapshotter
+    maintainers:
+    - name: llmos-ai
+    name: snapshot-controller
+    type: application
+    urls:
+    - https://github.com/llmos-ai/charts/releases/download/snapshot-controller-0.1.1/snapshot-controller-0.1.1.tgz
+    version: 0.1.1
+  system-upgrade-controller:
+  - apiVersion: v2
+    appVersion: v0.14.2
+    created: "2024-12-14T14:43:09.461070059Z"
+    description: System upgrade controller chart helps to upgrading your nodes.
+    digest: e6f79971115bb32ccd7ca6e45f42cafa2bc8b9c4a395215902bf60eebf978809
+    maintainers:
+    - name: llmos-ai
+    name: system-upgrade-controller
+    sources:
+    - https://github.com/rancher/system-upgrade-controller
+    type: application
+    urls:
+    - https://github.com/llmos-ai/charts/releases/download/system-upgrade-controller-0.1.1/system-upgrade-controller-0.1.1.tgz
+    version: 0.1.1
+generated: "2024-12-14T14:43:09.461089666Z"
