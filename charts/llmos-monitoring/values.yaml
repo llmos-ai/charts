@@ -208,7 +208,6 @@ global:
   k8s:
     provider: "k3s"
   llmos:
-    systemDefaultRegistry: ""
     clusterId: "local"
     dashboardsNamespace: &dashboardsNamespace "llmos-dashboards"
     systemNamespace: "llmos-system"
@@ -234,11 +233,6 @@ global:
       create: true
       ## Aggregate default user ClusterRoles into default k8s ClusterRoles
       aggregateToDefaultRoles: true
-
-  kubectl:
-    repository: rancher/kubectl
-    tag: v1.20.2
-    pullPolicy: IfNotPresent
 
   ## Global image registry to use if it needs to be overriden for some specific use cases (e.g local registries, custom images, ...)
   ##

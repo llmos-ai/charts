@@ -24,6 +24,7 @@ spec:
   jobLabel: app
   namespaceSelector:
     matchNames:
+      - "llmos-gpu-stack-system"
       - {{ .Values.global.llmos.systemNamespace }}
   selector:
     matchLabels:

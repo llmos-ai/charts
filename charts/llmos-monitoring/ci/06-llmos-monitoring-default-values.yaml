@@ -6,7 +6,6 @@ global:
   k8s:
     provider: "k3s"
   llmos:
-    systemDefaultRegistry: ""
     clusterId: "local"
     dashboardsNamespace: &dashboardsNamespace "llmos-dashboards"
     systemNamespace: "llmos-system"

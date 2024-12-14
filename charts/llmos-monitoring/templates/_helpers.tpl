@@ -329,12 +329,6 @@ global:
 {{- end }}
 {{- end }}
 
-{{- define "system_default_registry" -}}
-{{- if .Values.global.llmos.systemDefaultRegistry -}}
-{{- printf "%s/" .Values.global.llmos.systemDefaultRegistry -}}
-{{- end -}}
-{{- end -}}
-
 {{/*
 https://github.com/helm/helm/issues/4535#issuecomment-477778391
 Usage: {{ include "call-nested" (list . "SUBCHART_NAME" "TEMPLATE") }}
