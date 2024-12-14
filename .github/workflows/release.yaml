@@ -3,10 +3,10 @@ name: Release Charts
 on:
   workflow_run:
     workflows: ["Lint and Test Charts"]
+    types:
+      - completed # Triggers when the upstream workflow is completed
     branches:
       - main
-    types:
-      - completed
 
 jobs:
   release:
@@ -16,6 +16,7 @@ jobs:
       id-token: write # needed for keyless signing
 
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
