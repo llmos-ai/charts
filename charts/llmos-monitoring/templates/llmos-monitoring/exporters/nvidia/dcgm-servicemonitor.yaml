@@ -4,7 +4,7 @@ kind: ServiceMonitor
 metadata:
   labels: {{ include "kube-prometheus-stack.labels" . | nindent 4 }}
   name: dcgm-exporter
-  namespace: {{ .Values.global.llmos.systemNamespace }}
+  namespace: {{ .Values.global.llmos.gpuStackNamespace }}
 spec:
   endpoints:
   - interval: 15s
@@ -24,8 +24,7 @@ spec:
   jobLabel: app
   namespaceSelector:
     matchNames:
-      - "llmos-gpu-stack-system"
-      - {{ .Values.global.llmos.systemNamespace }}
+      - {{ .Values.global.llmos.gpuStackNamespace }}
   selector:
     matchLabels:
       app: nvidia-dcgm-exporter
