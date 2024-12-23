@@ -72,7 +72,8 @@ jobs:
         env:
           CHANGED_LIST: ${{ steps.list-changed.outputs.changed_list }}
         run: |
-          kubectl create ns llmos-system && kubectl create ns llmos-monitoring-system && kubectl create ns llmos-dashboards
+          kubectl create ns llmos-system && kubectl create ns llmos-monitoring-system && kubectl create ns llmos-dashboards \
+          && kubectl create ns llmos-gpu-stack-system
           ct install --namespace llmos-monitoring-system --config .github/linters/ct.yaml
         if: env.llmos_monitoring_changed == 'true'
      
