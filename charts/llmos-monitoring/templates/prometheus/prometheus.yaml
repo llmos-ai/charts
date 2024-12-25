@@ -82,6 +82,8 @@ spec:
   externalUrl: "{{ tpl .Values.prometheus.prometheusSpec.externalUrl . }}"
 {{- else if and .Values.prometheus.ingress.enabled .Values.prometheus.ingress.hosts }}
   externalUrl: "http://{{ tpl (index .Values.prometheus.ingress.hosts 0) . }}{{ .Values.prometheus.prometheusSpec.routePrefix }}"
+{{- else if not (kindIs "invalid" .Values.global.llmos.url) }}
+  externalUrl: "{{ .Values.global.llmos.url }}/api/v1/namespaces/{{ .Values.namespaceOverride }}/services/http:{{ template "kube-prometheus-stack.fullname" . }}-prometheus:{{ .Values.prometheus.service.port }}/proxy"
 {{- else }}
   externalUrl: http://{{ template "kube-prometheus-stack.fullname" . }}-prometheus.{{ template "kube-prometheus-stack.namespace" . }}:{{ .Values.prometheus.service.port }}
 {{- end }}

@@ -36,6 +36,8 @@ spec:
   externalUrl: "{{ tpl .Values.alertmanager.alertmanagerSpec.externalUrl . }}"
 {{- else if and .Values.alertmanager.ingress.enabled .Values.alertmanager.ingress.hosts }}
   externalUrl: "http://{{ tpl (index .Values.alertmanager.ingress.hosts 0) . }}{{ .Values.alertmanager.alertmanagerSpec.routePrefix }}"
+{{- else if not (kindIs "invalid" .Values.global.llmos.url) }}
+  externalUrl: "{{ .Values.global.llmos.url }}/api/v1/namespaces/{{ .Values.namespaceOverride }}/services/http:{{ template "kube-prometheus-stack.fullname" . }}-alertmanager:{{ .Values.alertmanager.service.port }}/proxy"
 {{- else }}
   externalUrl: http://{{ template "kube-prometheus-stack.fullname" . }}-alertmanager.{{ template "kube-prometheus-stack.namespace" . }}:{{ .Values.alertmanager.service.port }}
 {{- end }}

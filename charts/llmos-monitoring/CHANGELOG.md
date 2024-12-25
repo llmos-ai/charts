@@ -4,7 +4,7 @@ This changelog highlights notable changes to this chart compared to the upstream
 
 - **Upstream `kube-prometheus-stack` version**: 66.1.1
 
-## Changes - v0.1.0 (2024-11-13)
+## Changes - v0.1.5 (2024-12-25)
 
 ### General
 
@@ -13,6 +13,7 @@ This changelog highlights notable changes to this chart compared to the upstream
 - **Added clusterRoles for managing Grafana dashboards**: Added `llmos-monitoring-dashboard-admin`, `llmos-monitoring-dashboard-edit`, and `llmos-monitoring-dashboard-view` default `Roles`. These roles allow admins to assign permissions to users to edit/view `ConfigMaps` within the `cattle-dashboards` namespace. Enable this by setting `.Values.global.rbac.userRoles.create` (default: `true`) and deploying Grafana as part of this chart. In a typical RBAC setup, use a `RoleBinding` to bind these roles to a Subject within the `cattle-dashboards` namespace to create/modify ConfigMaps containing the JSON used to persist Grafana dashboards.
 - **Added default resource limits**: Added default resource limits for `Prometheus Operator`, `Prometheus`, `AlertManager`, `Grafana`, `kube-state-metrics`, and `node-exporter`.
 - **Added global k8s provider config**: Added global `global.k8s.provider` config to support provider configs, default to `k3s` for now.
+- **Added global LLMOS URL config**: Added global `global.llmos.url` config to support config LLMOS URL for external Prometheus & AlertManager visit.
 - Disabled the following deployments by default (can be enabled if required):
   - `AlertManager`
   - `kube-controller-manager` metrics exporter (as already aggregated in apiserver if runs in k3s)
@@ -26,3 +27,7 @@ This changelog highlights notable changes to this chart compared to the upstream
 - **Added default LLMOS dashboard**: Added a default LLMOS dashboard on the Grafana home page.
 - **Modified Grafana service values**: Modified the default values for `grafana.service` and exposed them in the default `README.md`.
 - **Modified Grafana configuration**: Modified the default configuration to automatically assign users who access Grafana to the Viewer role and enable anonymous access to Grafana dashboards by default. This works well for LLMOS users accessing Grafana via the `kubectl proxy` on the LLMOS Dashboard UI, where users are authenticated by the Kubernetes API Server. However, you should modify this behavior if exposing Grafana in a non-authenticated way (e.g., as a `NodePort` service).
+
+### Alertmanager
+
+- **Added default `alertmanagerConfigSelector`**: Added a default [alertmanagerConfigSelector](https://prometheus-operator.dev/docs/developer/alerting/#using-alertmanagerconfig-resources) that to tell the operator which AlertmanagerConfig objects should be selected and merged with the main Alertmanager configuration.
