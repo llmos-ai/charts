@@ -403,6 +403,7 @@ alertmanager:
   #       {{ end }}
   #       {{ end }}
 
+
   ingress:
     enabled: false
 
@@ -740,7 +741,9 @@ alertmanager:
 
     ## AlertmanagerConfigs to be selected to merge and configure Alertmanager with.
     ##
-    alertmanagerConfigSelector: {}
+    alertmanagerConfigSelector:
+      matchLabels:
+        llmos.ai/alertmanagerconfig: "true"
     ## Example which selects all alertmanagerConfig resources
     ## with label "alertconfig" with values any of "example-config" or "example-config-2"
     # alertmanagerConfigSelector:
