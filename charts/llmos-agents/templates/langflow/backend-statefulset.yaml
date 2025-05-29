@@ -1,0 +1,187 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "llmos-agents.langflow.fullname" . }}-backend
+  labels:
+    {{- include "llmos-agents.langflow.labels" . | nindent 4 }}
+    {{- printf "langflow-scope: %q" "backend" | nindent 4 }}
+spec:
+  replicas: {{ .Values.langflow.backend.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "llmos-agents.langflow.selectorLabels" . | nindent 6 }}
+      {{- printf "langflow-scope: %q" "backend" | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.langflow.backend.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "llmos-agents.langflow.labels" . | nindent 8 }}
+        {{- printf "langflow-scope: %q" "backend" | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "llmos-agents.langflow.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.langflow.podSecurityContext | nindent 8 }}
+      volumes:
+        {{- if .Values.langflow.secretProvider.enabled }}
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "{{- .Values.langflow.secretProvider.name }}"
+        {{- end }}
+        {{- with .Values.langflow.backend.volumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.langflow.securityContext | nindent 12 }}
+          image: "{{ .Values.langflow.backend.image.registry }}/{{ .Values.langflow.backend.image.repository }}:{{ .Values.langflow.backend.image.tag }}"
+          imagePullPolicy: {{ .Values.langflow.backend.image.imagePullPolicy }}
+          command: ["/bin/bash", "-c"]
+          args:
+            - >
+              set -e &&
+              if [ -n "$LF_CHART_EXTERNALDB_DRIVER" ]; then
+                echo "LF_CHART_EXTERNALDB_DRIVER is set, using external database at $LF_CHART_EXTERNALDB_HOST" &&
+                export LANGFLOW_DATABASE_URL="$LF_CHART_EXTERNALDB_DRIVER://$LF_CHART_EXTERNALDB_USER:$LF_CHART_EXTERNALDB_PASSWORD@$LF_CHART_EXTERNALDB_HOST:$LF_CHART_EXTERNALDB_PORT/$LF_CHART_EXTERNALDB_DATABASE"
+              else
+                echo "LF_CHART_EXTERNALDB_DRIVER is not set, using SQLLite database"
+              fi &&
+              langflow run --host 0.0.0.0 --port {{ .Values.langflow.backend.service.port }} --log-level {{ .Values.langflow.backend.logLevel }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.langflow.backend.service.port }}
+              protocol: TCP
+          {{- if or .Values.langflow.secretProvider.enabled .Values.langflow.backend.sqlite.enabled .Values.langflow.backend.volumeMounts }}
+          volumeMounts:
+            {{- if .Values.langflow.secretProvider.enabled }}
+            - name: secrets-store-inline
+              mountPath: "/mnt/secrets"
+              readOnly: true
+            {{- end }}
+            {{- if .Values.langflow.backend.sqlite.enabled }}
+            - name: data
+              mountPath: /data
+            {{- end }}
+            {{- with .Values.langflow.backend.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- end }}
+          {{- if not (empty .Values.langflow.backend.livenessProbe) }}
+          {{- with .Values.langflow.backend.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          {{- if not (empty .Values.langflow.backend.readinessProbe) }}
+          {{- with .Values.langflow.backend.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          {{- if not (empty .Values.langflow.backend.startupProbe) }}
+          {{- with .Values.langflow.backend.startupProbe }}
+          startupProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          env:
+            - name: LANGFLOW_BACKEND_ONLY
+              value: "{{ .Values.langflow.backend.backendOnly }}"
+            - name: LANGFLOW_NUM_WORKERS
+              value: "{{ .Values.langflow.backend.numWorkers }}"
+            {{- if .Values.langflow.backend.sqlite.enabled }}
+            - name: LANGFLOW_DATABASE_URL
+              value: "sqlite:////data/langflow.db"
+            {{- end }}
+            {{- with .Values.langflow.backend.env }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- if .Values.postgresql.enabled }}
+            - name: LF_CHART_EXTERNALDB_DRIVER
+              value: "postgresql"
+            - name: LF_CHART_EXTERNALDB_HOST
+              {{- if eq  .Values.postgresql.architecture "replication" }}
+              value: "{{ .Release.Name }}-postgresql-primary.{{ .Release.Namespace }}"
+              {{- else }}
+              value: "{{ .Release.Name }}-postgresql.{{ .Release.Namespace }}"
+              {{- end }}
+            - name: LF_CHART_EXTERNALDB_PORT
+              value: "{{ .Values.postgresql.primary.service.ports.postgresql }}"
+            - name: LF_CHART_EXTERNALDB_DATABASE
+              value: "{{ .Values.postgresql.global.postgresql.auth.database }}"
+            - name: LF_CHART_EXTERNALDB_USER
+              value: "{{ .Values.postgresql.global.postgresql.auth.username }}"
+            - name: LF_CHART_EXTERNALDB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                    name: "{{ .Release.Name }}-postgresql"
+                    key: password
+            {{- else if .Values.langflow.backend.externalDatabase.enabled }}
+            - name: LF_CHART_EXTERNALDB_DRIVER
+            {{- toYaml .Values.langflow.backend.externalDatabase.driver | nindent 14 }}
+            - name: LF_CHART_EXTERNALDB_HOST
+            {{- toYaml .Values.langflow.backend.externalDatabase.host | nindent 14 }}
+            - name: LF_CHART_EXTERNALDB_PORT
+            {{- toYaml .Values.langflow.backend.externalDatabase.port | nindent 14 }}
+            - name: LF_CHART_EXTERNALDB_DATABASE
+            {{- toYaml .Values.langflow.backend.externalDatabase.database | nindent 14 }}
+            - name: LF_CHART_EXTERNALDB_USER
+            {{- toYaml .Values.langflow.backend.externalDatabase.user | nindent 14 }}
+            - name: LF_CHART_EXTERNALDB_PASSWORD
+            {{- toYaml .Values.langflow.backend.externalDatabase.password | nindent 14 }}
+            {{- end }}
+            {{- if and (hasKey .Values.langflow.backend "autoLogin") (eq .Values.langflow.backend.autoLogin false) }}
+            - name: LANGFLOW_AUTO_LOGIN
+              value: "{{ .Values.langflow.backend.autoLogin | default "False" }}"
+            - name: LANGFLOW_SUPERUSER
+              value: "{{ .Values.langflow.backend.superuser | default "admin" }}"
+            - name: LANGFLOW_SUPERUSER_PASSWORD
+              value: "{{ .Values.langflow.backend.superuserPassword | default (randAlphaNum 32) }}"
+            - name: LANGFLOW_SECRET_KEY
+              value: "{{ .Values.langflow.backend.secretKey | default (randAlphaNum 32) }}"
+            - name: LANGFLOW_NEW_USER_IS_ACTIVE
+              value: "{{ .Values.langflow.backend.newUserIsActive | default "False" }}"
+            {{- end }}
+          resources:
+            {{- toYaml .Values.langflow.backend.resources | nindent 12 }}
+      {{- with .Values.langflow.backend.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.langflow.backend.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.langflow.backend.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  {{- if .Values.langflow.backend.sqlite.enabled }}
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: {{ .Values.langflow.backend.sqlite.volume.size }}
+      {{- if .Values.langflow.backend.sqlite.volume.existingStorageClassName }}
+      {{- if ne .Values.langflow.backend.sqlite.volume.existingStorageClassName "default"}}
+      storageClassName: {{ .Values.langflow.backend.sqlite.volume.existingStorageClassName }}
+      {{- else }}
+      {{- end }}
+      {{- else }}
+      storageClassName: "{{ template "llmos-agents.langflow.name" . }}-sqlite"
+      {{- end }}
+      
+  {{- end }}

@@ -1,0 +1,364 @@
+# Default values for llmos-agents.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  ## @param global.imageRegistry Global Docker image registry
+  ##
+  imageRegistry: ""
+  ## @param global.imagePullSecrets Global Docker registry secret names as an array
+  ## e.g.
+  ## imagePullSecrets:
+  ##   - myRegistryKeySecretName
+  ##
+  imagePullSecrets: []
+
+# This is for the secretes for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+imagePullSecrets: []
+# This is to override the chart name.
+nameOverride: ""
+fullnameOverride: ""
+
+langflow:
+  # This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
+  serviceAccount:
+    # Specifies whether a service account should be created
+    create: true
+    # Automatically mount a ServiceAccount's API credentials?
+    automount: true
+    # Annotations to add to the service account
+    annotations: {}
+    # The name of the service account to use.
+    # If not set and create is true, a name is generated using the fullname template
+    name: ""
+
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+
+  securityContext:
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 1000
+    allowPrivilegeEscalation: false
+    runAsGroup: 1000
+
+  podSecurityContext:
+    fsGroup: 1000
+    runAsUser: 1000
+    runAsNonRoot: true
+    runAsGroup: 1000
+
+  backend:
+    logLevel: INFO
+    replicaCount: 1
+    service:
+      type: ClusterIP
+      port: 7860
+    backendOnly: true
+    numWorkers: 1
+    image:
+      registry: ghcr.io
+      repository: llmos-ai/mirrored-langflowai-langflow
+      imagePullPolicy: IfNotPresent
+      tag: 1.4.2
+    command:
+      - python
+      - -m
+      - langflow
+      - run
+      - --host
+      - 0.0.0.0
+      - --backend-only
+    resources:
+      requests:
+        cpu: 0.5
+        memory: 1Gi
+      limits:
+        cpu: 4
+        memory: 8Gi
+    livenessProbe:
+      httpGet:
+        path: /health
+        port: http
+      failureThreshold: 3
+      periodSeconds: 15
+      timeoutSeconds: 5
+      initialDelaySeconds: 30
+    readinessProbe:
+      httpGet:
+        path: /health
+        port: http
+      failureThreshold: 3
+      periodSeconds: 15
+      timeoutSeconds: 5
+      initialDelaySeconds: 30
+    startupProbe:
+      httpGet:
+        path: /health
+        port: http
+      failureThreshold: 3
+      periodSeconds: 15
+      timeoutSeconds: 5
+      initialDelaySeconds: 60
+    env:
+      - name: LANGFLOW_PORT
+        value: "7860"
+      - name: LANGFLOW_ALEMBIC_LOG_FILE
+        value: "/app/db/alembic.log"
+      - name: LANGFLOW_UPDATE_STARTER_PROJECTS
+        value: "false"
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+    podAnnotations: {}
+#      prometheus.io/scrape: "true"
+#      prometheus.io/port: "9090"
+#      prometheus.io/path: "/metrics"
+    securityContext:
+      capabilities:
+        drop:
+          - ALL
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000
+      allowPrivilegeEscalation: false
+      runAsGroup: 1000
+
+    podSecurityContext:
+      fsGroup: 1000
+      runAsUser: 1000
+      runAsNonRoot: true
+      runAsGroup: 1000
+
+    externalDatabase:
+      # Compose in the SQLAlchemy format:
+      # https://docs.sqlalchemy.org/en/20/core/engines.html#database-urls
+      enabled: false
+      driver: {}
+        # value: "postgresql"
+      host: {}
+        # value: "postgresql"
+      port: {}
+        # value: "5432"
+      user: {}
+        # value: "langflow"
+      password: {}
+        # value: "langflow"
+        # valueFrom:
+        #   secretKeyRef:
+        #    key: password
+        #    name: <secret-name>
+      database: {}
+        # value: "langflow"
+
+    volumes:
+      - name: flows
+        emptyDir: {}
+      - name: tmp
+        emptyDir: {}
+      - name: data
+        emptyDir: {}
+      - name: db
+        emptyDir: {}
+
+    volumeMounts:
+      - name: flows
+        mountPath: /app/flows
+        readOnly: false
+      - name: tmp
+        mountPath: /tmp
+        readOnly: false
+      - name: data
+        mountPath: /app/data
+        readOnly: false
+      - name: db
+        mountPath: /app/db
+        readOnly: false
+
+    sqlite:
+      enabled: false
+      volume:
+        size: "1Gi"
+        existingStorageClassName: ""
+        # If you want the chart to create storage classes, then don't set
+        # existingStorageClassName name and provide configuration values
+        # for the storage class. The settings vary based on cloud
+        # provider. Below are examples for AWS, GCP, and Azure.
+
+        # For AWS
+        # storageClass:
+        #  provisioner: kubernetes.io/aws-ebs
+        #  type: gp2
+        #  fsType: ext4
+        #  extraParams:
+        #     iopsPerGB: "10"
+
+        # For GCP
+        # storageClass:
+        #   provisioner: kubernetes.io/gce-pd
+        #   type: pd-ssd
+        #   fsType: ext4
+        #   extraParams:
+        #      replication-type: none
+
+        # For Azure
+        # storageClass:
+        #   provisioner: kubernetes.io/azure-disk
+        #   fsType: ext4
+        #   type: managed-premium
+        #   extraParams:
+        #     storageaccounttype: Premium_LRS
+        #     kind: Managed
+        #     cachingmode: ReadOnly
+        storageClass: {}
+
+    # autoLogin: true|false
+    # superuser: <superuser login>
+    # superuserPassword: <superuser password>
+    # secretKey: <encryption key, optional>
+    # newUserIsActive: true|false
+
+  frontend:
+    enabled: true
+    replicaCount: 1
+    service:
+      type: LoadBalancer
+      port: 8080
+      # nodePort: 30080
+    image:
+      registry: ghcr.io
+      repository: llmos-ai/mirrored-langflowai-langflow-frontend
+      tag: 1.4.2
+      imagePullPolicy: IfNotPresent
+    resources:
+      requests:
+        cpu: 0.2
+        memory: 512Mi
+      limits:
+        cpu: 1
+        memory: 2Gi
+    probe:
+      failureThreshold: 3
+      periodSeconds: 10
+      timeoutSeconds: 5
+      initialDelaySeconds: 30
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+    podAnnotations: {}
+    volumes:
+      - name: tmp
+        emptyDir: {}
+    volumeMounts:
+      - name: tmp
+        mountPath: /tmp
+        readOnly: false
+
+  secretProvider:
+    enabled: false
+
+postgresql:
+  enabled: true
+  name: postgres
+  image:
+    registry: ghcr.io
+    repository: llmos-ai/mirrored-bitnami-postgresql
+    tag: 17.5.0-debian-12-r6
+  global:
+    storageClass: ""
+    security:
+      allowInsecureImages: true
+    postgresql:
+      auth:
+        postgresPassword: "llmos-agents@123"
+        username: "langflow"
+        password: ""
+        database: "langflow"
+  ## @param architecture PostgreSQL architecture (`standalone` or `replication`)
+  architecture: replication
+  ## Replication configuration
+  ## Ignored if `architecture` is `standalone`
+  primary:
+    resources:
+      requests:
+        cpu: 200m
+        memory: 256Mi
+      limits:
+        cpu: 2
+        memory: 1024Mi
+    persistence:
+      enabled: true
+      storageClass: ""
+      accessModes:
+        - ReadWriteOnce
+      size: 8Gi
+  readReplicas:
+    persistence:
+      enabled: true
+      storageClass: ""
+      accessModes:
+        - ReadWriteOnce
+      size: 8Gi
+
+weaviate:
+  enabled: true
+  image:
+    registry: ghcr.io
+    repo: llmos-ai/mirrored-semitechnologies-weaviate
+    tag: 1.30.6
+  resources:
+    requests:
+      cpu: 200m
+      memory: 300Mi
+    limits:
+      cpu: 2
+      memory: 2Gi
+  storage:
+    size: 32Gi
+    storageClassName: ""
+  service:
+    name: weaviate
+    ports:
+      - name: http
+        protocol: TCP
+        port: 80
+    type: NodePort
+
+  grpcService:
+    enabled: true
+    name: weaviate-grpc
+    ports:
+      - name: grpc
+        protocol: TCP
+        port: 50051
+    type: NodePort
+
+  serviceMonitor:
+    enabled: false
+    interval: 30s
+    scrapeTimeout: 10s
+  initContainers:
+    sysctlInitContainer:
+      enabled: true
+      sysctlVmMaxMapCount: 524288
+      image:
+        registry: ghcr.io
+        repo: llmos-ai/mirrored-library-nginx
+        tag: 1.24.0-alpine
+        pullPolicy: IfNotPresent

@@ -1,0 +1,71 @@
+langflow:
+  backend:
+    replicaCount: 1
+    livenessProbe:
+      httpGet:
+        path: /health
+        port: http
+      failureThreshold: 3
+      periodSeconds: 15
+      timeoutSeconds: 5
+      initialDelaySeconds: 30
+    readinessProbe:
+      httpGet:
+        path: /health
+        port: http
+      failureThreshold: 3
+      periodSeconds: 15
+      timeoutSeconds: 5
+      initialDelaySeconds: 30
+    startupProbe:
+      httpGet:
+        path: /health
+        port: http
+      failureThreshold: 20
+      periodSeconds: 15
+      timeoutSeconds: 5
+      initialDelaySeconds: 60
+  frontend:
+    enabled: true
+    replicaCount: 1
+    service:
+      type: ClusterIP
+      port: 8080
+postgresql:
+  enabled: true
+  name: postgres
+  image:
+    registry: ghcr.io
+    repository: llmos-ai/mirrored-bitnami-postgresql
+    tag: 17.5.0-debian-12-r6
+  global:
+    storageClass: ""
+    security:
+      allowInsecureImages: true
+    postgresql:
+      auth:
+        postgresPassword: "llmos-agents@123"
+        username: "langflow"
+        password: ""
+        database: "langflow"
+  ## @param architecture PostgreSQL architecture (`standalone` or `replication`)
+  architecture: standalone
+  ## Replication configuration
+  ## Ignored if `architecture` is `standalone`
+  primary:
+    persistence:
+      enabled: true
+      storageClass: ""
+      accessModes:
+        - ReadWriteOnce
+      size: 1Gi
+
+weaviate:
+  enabled: true
+  image:
+    registry: ghcr.io
+    repo: llmos-ai/mirrored-semitechnologies-weaviate
+    tag: 1.30.6
+  storage:
+    size: 1Gi
+    storageClassName: ""

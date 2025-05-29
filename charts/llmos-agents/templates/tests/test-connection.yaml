@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: '{{ include "llmos-agents.langflow.fullname" . }}-test-connection'
+  labels:
+    {{- include "llmos-agents.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget', '--spider', '-T', '5']
+      args: ['http://{{ include "llmos-agents.langflow.fullname" . }}-backend.{{ .Release.Namespace}}:{{ .Values.langflow.backend.service.port }}/api/v1/projects']
+  restartPolicy: Never
