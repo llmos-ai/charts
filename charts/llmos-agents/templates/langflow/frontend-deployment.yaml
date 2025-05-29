@@ -1,0 +1,111 @@
+{{- if .Values.langflow.frontend.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "llmos-agents.langflow.fullname" . }}-frontend
+  labels:
+    {{- include "llmos-agents.langflow.labels" . | nindent 4 }}
+    {{- printf "langflow-scope: %q" "frontend" | nindent 4 }}
+spec:
+  replicas: {{ .Values.langflow.frontend.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "llmos-agents.langflow.selectorLabels" . | nindent 6 }}
+      {{- printf "langflow-scope: %q" "frontend" | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.langflow.frontend.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "llmos-agents.langflow.labels" . | nindent 8 }}
+        {{- printf "langflow-scope: %q" "frontend" | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "llmos-agents.langflow.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.langflow.podSecurityContext | nindent 8 }}
+      volumes:
+        {{- if .Values.langflow.secretProvider.enabled }}
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "{{- .Values.langflow.secretProvider.name }}"
+        {{- end }}
+        {{- with .Values.langflow.frontend.volumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        - name: nginx-config
+          configMap:
+            name: {{ include "llmos-agents.langflow.fullname" . }}-frontend-nginx-config
+        - name: nginx
+          emptyDir: {}
+        - name: nginx-cache
+          emptyDir: {}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.langflow.frontend.image.registry }}/{{ .Values.langflow.frontend.image.repository }}:{{ .Values.langflow.frontend.image.tag }}"
+          imagePullPolicy: {{ .Values.langflow.frontend.image.imagePullPolicy }}
+          securityContext:
+            {{- toYaml .Values.langflow.securityContext | nindent 12 }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.langflow.frontend.service.port }}
+              protocol: TCP
+          volumeMounts:
+            {{- if .Values.langflow.secretProvider.enabled }}
+            - name: secrets-store-inline
+              mountPath: "/mnt/secrets"
+              readOnly: true
+            {{- end }}
+            {{- with .Values.langflow.frontend.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+            - name: nginx
+              mountPath: "/tmp/nginx"
+              readOnly: false
+            - name: nginx-cache
+              mountPath: "/var/cache/nginx"
+              readOnly: false
+          livenessProbe:
+            httpGet:
+              path: /index.html
+              port: http
+            initialDelaySeconds: {{ .Values.langflow.frontend.probe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.langflow.frontend.probe.periodSeconds }}
+            timeoutSeconds: {{ .Values.langflow.frontend.probe.timeoutSeconds }}
+            failureThreshold: {{ .Values.langflow.frontend.probe.failureThreshold }}   
+          readinessProbe:
+            httpGet:
+              path: /index.html
+              port: http
+            initialDelaySeconds: {{ .Values.langflow.frontend.probe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.langflow.frontend.probe.periodSeconds }}
+            timeoutSeconds: {{ .Values.langflow.frontend.probe.timeoutSeconds }}
+            failureThreshold: {{ .Values.langflow.frontend.probe.failureThreshold }}   
+          env:
+            - name: BACKEND_URL
+              value: "http://{{ template "llmos-agents.langflow.fullname" . }}-backend.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.langflow.backend.service.port }}"
+            - name: FRONTEND_PORT
+              value: "{{ .Values.langflow.frontend.service.port }}"
+          resources:
+            {{- toYaml .Values.langflow.frontend.resources | nindent 12 }}
+      {{- with .Values.langflow.frontend.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.langflow.frontend.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.langflow.frontend.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

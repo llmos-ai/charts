@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "llmos-agents.langflow.fullname" . }}
+  labels:
+    {{- include "llmos-agents.langflow.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.langflow.frontend.service.type }}
+  ports:
+    - port: {{ .Values.langflow.frontend.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+      {{- if .Values.langflow.frontend.service.nodePort }}
+      nodePort: {{ .Values.langflow.frontend.service.nodePort }}
+      {{- end }}
+  selector:
+    {{- include "llmos-agents.langflow.selectorLabels" . | nindent 4 }}
+    langflow-scope: "frontend"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "llmos-agents.langflow.fullname" . }}-backend
+  labels:
+    {{- include "llmos-agents.langflow.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.langflow.backend.service.type }}
+  ports:
+    - port: {{ .Values.langflow.backend.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+      {{- if .Values.langflow.backend.service.nodePort }}
+      nodePort: {{ .Values.langflow.backend.service.nodePort }}
+      {{- end }}
+  selector:
+    {{- include "llmos-agents.langflow.selectorLabels" . | nindent 4 }}
+    langflow-scope: "backend"

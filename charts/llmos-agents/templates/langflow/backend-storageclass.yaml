@@ -1,0 +1,24 @@
+{{- if and .Values.langflow.backend.sqlite.enabled (not .Values.langflow.backend.sqlite.volume.existingStorageClassName) }}
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: "{{ template "llmos-agents.langflow.fullname" . }}-sqlite"
+  labels:
+    {{- include "llmos-agents.langflow.labels" . | nindent 4 }}
+allowVolumeExpansion: true
+reclaimPolicy: Retain
+volumeBindingMode: WaitForFirstConsumer
+{{- if .Values.langflow.backend.sqlite.volume.storageClass }}
+provisioner: {{ .Values.langflow.backend.sqlite.volume.storageClass.provisioner }}
+parameters:
+  {{- if .Values.langflow.backend.sqlite.volume.storageClass.type }}
+  type: {{ .Values.langflow.backend.sqlite.volume.storageClass.type }}
+  {{- end }}
+  {{- if .Values.langflow.backend.sqlite.volume.storageClass.fsType }}
+  fsType: {{ .Values.langflow.backend.sqlite.volume.storageClass.fsType }}
+  {{- end }}
+  {{- if .Values.langflow.backend.sqlite.volume.storageClass.extraParams }}
+{{ toYaml .Values.langflow.backend.sqlite.volume.storageClass.extraParams | indent 2 }}
+  {{- end }}
+{{- end }}
+{{- end }}
