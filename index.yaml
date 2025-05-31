@@ -1,5 +1,32 @@
 apiVersion: v1
 entries:
+  llmos-agents:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2025-05-31T07:46:29.649107534Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - postgres
+      version: 16.7.5
+    - condition: weaviate.enabled
+      name: weaviate
+      repository: https://weaviate.github.io/weaviate-helm
+      tags:
+      - vector
+      - search
+      version: 17.4.5
+    description: A Helm chart for LLMOS agents management
+    digest: 6ec6a5e9d4ba9fbde9dd3c82731269368055e69578897968c860381458af1afd
+    maintainers:
+    - name: llmos-ai
+    name: llmos-agents
+    type: application
+    urls:
+    - https://github.com/llmos-ai/charts/releases/download/llmos-agents-0.1.0-rc1/llmos-agents-0.1.0-rc1.tgz
+    version: 0.1.0-rc1
   llmos-monitoring:
   - annotations:
       artifacthub.io/license: Apache-2.0
@@ -444,4 +471,4 @@ entries:
     urls:
     - https://github.com/llmos-ai/charts/releases/download/system-upgrade-controller-0.1.1/system-upgrade-controller-0.1.1.tgz
     version: 0.1.1
-generated: "2024-12-26T03:18:50.408634001Z"
+generated: "2025-05-31T07:46:29.649136909Z"
