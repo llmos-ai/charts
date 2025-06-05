@@ -1,3 +1,7 @@
+global:
+  postgresql:
+    fullnameOverride: "llmos-agents-postgresql"
+nameOverride: "llmos-agents"
 langflow:
   backend:
     replicaCount: 1
@@ -21,10 +25,10 @@ langflow:
       httpGet:
         path: /health
         port: http
-      failureThreshold: 20
+      failureThreshold: 3
       periodSeconds: 15
       timeoutSeconds: 5
-      initialDelaySeconds: 60
+      initialDelaySeconds: 30
   frontend:
     enabled: true
     replicaCount: 1
@@ -34,6 +38,12 @@ langflow:
 postgresql:
   enabled: true
   name: postgres
+  auth:
+    enablePostgresUser: true
+    postgresPassword: ""
+    username: &postgresUser "llmos-agents"
+    password: ""
+    database: "llmos_agents"
   image:
     registry: ghcr.io
     repository: llmos-ai/mirrored-bitnami-postgresql
@@ -42,12 +52,6 @@ postgresql:
     storageClass: ""
     security:
       allowInsecureImages: true
-    postgresql:
-      auth:
-        postgresPassword: "llmos-agents@123"
-        username: "langflow"
-        password: ""
-        database: "langflow"
   ## @param architecture PostgreSQL architecture (`standalone` or `replication`)
   architecture: standalone
   ## Replication configuration
@@ -69,3 +73,43 @@ weaviate:
   storage:
     size: 1Gi
     storageClassName: ""
+langfuse:
+  fullnameOverride: "llmos-agents-langfuse"
+  langfuse:
+    salt:
+      value: "test123"
+      secretKeyRef:
+        name: ""
+        key: ""
+    web:
+      service:
+        type: NodePort
+    additionalEnv: []
+    nextauth:
+      # -- When deploying to production, set the `nextauth.url` value to the canonical URL of your site.
+      url: http://localhost:3000
+      # -- Used to encrypt the NextAuth.js JWT, and to hash email verification tokens. Can be configured by value or existing secret reference.
+      secret:
+        value: "test123"
+        secretKeyRef:
+          name: ""
+          key: ""
+  redis:
+    fullnameOverride: llmos-agents-redis
+    host: "llmos-agents-redis-primary"
+    primary:
+      persistence:
+        enabled: false
+  clickhouse:
+    fullnameOverride: "llmos-agents-clickhouse"
+    host: "llmos-agents-clickhouse"
+    resourcesPreset: small
+    replicaCount: 1
+    zookeeper:
+      enabled: true
+      replicaCount: 1
+  postgresql:
+    deploy: false
+    host: "llmos-agents-postgresql"
+    auth:
+      username: *postgresUser
