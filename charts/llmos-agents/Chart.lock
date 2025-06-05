@@ -5,5 +5,8 @@ dependencies:
 - name: weaviate
   repository: https://weaviate.github.io/weaviate-helm
   version: 17.4.5
-digest: sha256:52cb3200b974b733334640fdf577d5c8fe0c9a2faf6127035b6caaefdd2d1ea0
-generated: "2025-05-29T11:35:52.548722+08:00"
+- name: langfuse
+  repository: https://langfuse.github.io/langfuse-k8s
+  version: 1.2.15
+digest: sha256:6cdcd46c09c543931d8fc4cdd7e7db8d1bd27ef4d93d67520d07e4f9c6456bc3
+generated: "2025-06-04T23:12:02.109923+08:00"

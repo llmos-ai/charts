@@ -100,3 +100,7 @@ Create the name of the service account to use
 {{- default "default" .Values.langflow.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{- define "llmos-agents.langfuse.init-name" -}}
+{{- printf "%s-langfuse-init" (default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-") }}
+{{- end }}

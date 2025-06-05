@@ -7,5 +7,6 @@ chart-repos:
   - grafana=https://grafana.github.io/helm-charts
   - prometheus-community=https://prometheus-community.github.io/helm-charts
   - weaviate=https://weaviate.github.io/weaviate-helm
+  - langfuse=https://langfuse.github.io/langfuse-k8s
 github-groups: true
 helm-extra-args: --timeout 600s
