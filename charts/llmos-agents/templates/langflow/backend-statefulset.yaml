@@ -106,25 +106,39 @@ spec:
             {{- with .Values.langflow.backend.env }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
+            {{- if .Values.langfuse.enabled }}
+            - name: LANGFUSE_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "llmos-agents.langfuse.init-name" . }}
+                  key: LANGFUSE_INIT_PROJECT_PUBLIC_KEY
+            - name: LANGFUSE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "llmos-agents.langfuse.init-name" . }}
+                  key: LANGFUSE_INIT_PROJECT_SECRET_KEY
+            - name: LANGFUSE_HOST
+              value: "http://{{ .Release.Name }}-langfuse-web.{{.Release.Namespace}}:{{ .Values.langfuse.langfuse.web.service.port }}"
+            {{- end }}
             {{- if .Values.postgresql.enabled }}
             - name: LF_CHART_EXTERNALDB_DRIVER
               value: "postgresql"
             - name: LF_CHART_EXTERNALDB_HOST
               {{- if eq  .Values.postgresql.architecture "replication" }}
-              value: "{{ .Release.Name }}-postgresql-primary.{{ .Release.Namespace }}"
+              value: "{{ default (printf "%s-postgresql-primary" .Release.Name) .Values.global.postgresql.fullnameOverride }}.{{ .Release.Namespace }}"
               {{- else }}
-              value: "{{ .Release.Name }}-postgresql.{{ .Release.Namespace }}"
+              value: "{{ default (printf "%s-postgresql" .Release.Name) .Values.global.postgresql.fullnameOverride }}.{{ .Release.Namespace }}"
               {{- end }}
             - name: LF_CHART_EXTERNALDB_PORT
               value: "{{ .Values.postgresql.primary.service.ports.postgresql }}"
             - name: LF_CHART_EXTERNALDB_DATABASE
-              value: "{{ .Values.postgresql.global.postgresql.auth.database }}"
+              value: "{{ .Values.postgresql.auth.database }}"
             - name: LF_CHART_EXTERNALDB_USER
-              value: "{{ .Values.postgresql.global.postgresql.auth.username }}"
+              value: "{{ .Values.postgresql.auth.username }}"
             - name: LF_CHART_EXTERNALDB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                    name: "{{ .Release.Name }}-postgresql"
+                    name: "{{ default (printf "%s-postgresql" .Release.Name) .Values.global.postgresql.fullnameOverride }}"
                     key: password
             {{- else if .Values.langflow.backend.externalDatabase.enabled }}
             - name: LF_CHART_EXTERNALDB_DRIVER
